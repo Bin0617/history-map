@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>සාමාන්‍ය පෙළ හා උසස් පෙළ සිතියම් ලකුණු කිරීම</title>
+    <style>
+        :root { --primary-color: #2c3e50; --accent-color: #e74c3c; --success-color: #2ecc71; --bg-color: #f8f9fa; --gold-color: #f1c40f; --card-bg: #ffffff; --text-color: #2c3e50; --panel-bg: #dfe6e9; }
+        [data-theme="dark"] { --bg-color: #1e272e; --card-bg: #2d3436; --text-color: #f5f6fa; --primary-color: #00cec9; --panel-bg: #3d3d3d; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; color: var(--text-color); min-height: 100vh; box-sizing: border-box; }
+        .video-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.25; pointer-events: none; }
+        body { background-color: var(--bg-color); transition: background-color 0.4s ease, color 0.4s ease; }
+        .top-actions { position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 500; }
+        .btn-action { background-color: var(--primary-color); color: white; padding: 8px 15px; font-size: 14px; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); border: none; cursor: pointer; font-weight: bold; }
+        .intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(-45deg, #1e3c72, #2a5298, #134e5e, #71b280); background-size: 400% 400%; animation: gradientBg 10s ease infinite; z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; transition: opacity 0.6s ease, visibility 0.6s; }
+        @keyframes gradientBg { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        .intro-overlay h1 { font-size: 34px; color: var(--gold-color); margin-bottom: 15px; padding: 0 15px; text-shadow: 2px 2px 5px rgba(0,0,0,0.5); font-weight: 800; }
+        .intro-overlay p { font-size: 18px; margin-bottom: 20px; max-width: 550px; line-height: 1.6; color: #f5f6fa; padding: 0 20px; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+        .btn-start { background-color: var(--gold-color); color: #2c3e50; font-size: 20px; padding: 15px 45px; border-radius: 30px; box-shadow: 0 4px 15px rgba(241, 196, 15, 0.4); font-weight: bold; border: none; cursor: pointer; transition: all 0.3s ease; margin-bottom: 20px; }
+        .btn-start:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(241, 196, 15, 0.6); background-color: #f39c12; }
+        h1 { color: var(--text-color); margin-bottom: 10px; text-align: center; text-shadow: 1px 1px 2px rgba(255,255,255,0.5); }
+        .controls { margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+        .category-filter-panel { background-color: var(--card-bg); border: 2px solid var(--primary-color); padding: 12px 25px; border-radius: 30px; margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-weight: bold; }
+        .category-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
+        .category-label input { width: 18px; height: 18px; cursor: pointer; }
+        .level-panel { display: flex; gap: 10px; margin-bottom: 20px; background: var(--panel-bg); padding: 6px; border-radius: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        .btn-level { padding: 8px 18px; font-size: 14px; border-radius: 20px; background: transparent; color: var(--text-color); border: none; font-weight: bold; }
+        .btn-level.active { background-color: #e67e22; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        button { padding: 10px 20px; font-size: 16px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.08); }
+        .btn-mode { background-color: var(--card-bg); color: var(--text-color); border: 2px solid var(--primary-color); }
+        .btn-mode.active { background-color: #16a085; color: white; border-color: #16a085; }
+        .score-board { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: var(--text-color); text-align: center; }
+        .app-container { position: relative; max-width: 650px; width: 100%; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.2); overflow: hidden; background: white; }
+        .map-wrapper { position: relative; width: 100%; }
+        .base-map { width: 100%; height: auto; display: block; margin: 0 auto; }
+        .pin { position: absolute; cursor: pointer; transform: translate(-50%, -50%); border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 10; }
+        .pin.type-river { width: 16px; height: 16px; background-color: #00008B; animation: pulseRiver 2s infinite; border: 2px solid white; }
+        .pin.type-tank { width: 16px; height: 16px; background-color: #3498db; animation: pulseTank 2s infinite; border: 2px solid white; }
+        .pin.type-port { width: 8px; height: 8px; background-color: #e67e22; animation: pulsePort 2s infinite; border: 1px solid white; }
+        .pin.type-kingdom { width: 8px; height: 8px; background-color: #9b59b6; animation: pulseKingdom 2s infinite; border: 1px solid white; }
+        .pin.type-subkingdom { width: 8px; height: 8px; background-color: #2980b9; animation: pulseSubKingdom 2s infinite; border: 1px solid white; }
+        .pin.type-province { width: 20px; height: 20px; background-color: #7f8c8d; animation: pulseProvince 2s infinite; border: 2px solid white; }
+        /* 🍃 නව ප්‍රාග් ඓතිහාසික ස්ථාන පින් */
+        .pin.type-prehistoric { width: 10px; height: 10px; background-color: #27ae60; animation: pulsePre 2s infinite; border: 1px solid white; }
+        
+        @keyframes pulseRiver { 0% { box-shadow: 0 0 0 0 rgba(0, 0, 139, 0.7); } 100% { box-shadow: 0 0 0 0 rgba(0, 0, 139, 0); } }
+        @keyframes pulseTank { 0% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7); } 100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); } }
+        @keyframes pulsePort { 0% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0.7); } 100% { box-shadow: 0 0 0 0 rgba(230, 126, 34, 0); } }
+        @keyframes pulseKingdom { 0% { box-shadow: 0 0 0 0 rgba(155, 89, 182, 0.7); } 100% { box-shadow: 0 0 0 0 rgba(155, 89, 182, 0); } }
+        @keyframes pulseSubKingdom { 0% { box-shadow: 0 0 0 0 rgba(41, 128, 185, 0.7); } 100% { box-shadow: 0 0 0 0 rgba(41, 128, 185, 0); } }
+        @keyframes pulseProvince { 0% { box-shadow: 0 0 0 0 rgba(127, 140, 141, 0.7); } 100% { box-shadow: 0 0 0 0 rgba(127, 140, 141, 0); } }
+        @keyframes pulsePre { 0% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); } 100% { box-shadow: 0 0 0 0 rgba(39, 174, 96, 0); } }
+
+        .pin.answered { background-color: var(--success-color) !important; animation: none; }
+        .pin.failed { background-color: #7f8c8d !important; animation: none; cursor: not-allowed; opacity: 0.6; }
+        .pin.user-guess { width: 16px !important; height: 16px !important; background-color: #f1c40f !important; animation: none; z-index: 12; border: 2px solid white; }
+        .pin.true-location { width: 16px !important; height: 16px !important; background-color: #3c40c6 !important; animation: none; z-index: 11; border: 2px solid white; }
+        .pin .tooltip { visibility: hidden; width: 200px; background-color: rgba(44, 62, 80, 0.95); color: #fff; text-align: center; border-radius: 6px; padding: 8px; position: absolute; z-index: 20; bottom: 150%; left: 50%; transform: translateX(-50%); box-shadow: 0 3px 10px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.3s; font-size: 14px; line-height: 1.4; }
+        .pin:hover .tooltip { visibility: visible; opacity: 1; }
+        .grade-box { font-size: 64px; font-weight: 900; margin: 15px 0; text-shadow: 2px 2px 5px rgba(0,0,0,0.1); }
+        .grade-a-plus { color: #2ecc71; } .grade-a { color: #27ae60; } .grade-b { color: #2980b9; } .grade-c { color: #f39c12; } .grade-f { color: #c0392b; }
+        .congrats-msg { font-size: 18px; font-weight: bold; color: #27ae60; margin-top: 10px; }
+        .history-dashboard { background-color: var(--card-bg); border: 2px solid var(--primary-color); padding: 15px 25px; border-radius: 12px; margin-top: 25px; width: 100%; max-width: 600px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); box-sizing: border-box; }
+        .history-dashboard h3 { margin-top: 0; text-align: center; border-bottom: 2px solid var(--panel-bg); padding-bottom: 5px; }
+        .history-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 15px; font-weight: bold; }
+        .history-row span:last-child { color: #e67e22; }
+        .app-footer { margin-top: 30px; font-size: 13px; font-weight: bold; color: var(--text-color); opacity: 0.7; text-align: center; letter-spacing: 0.5px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
+        .modal-content { background: var(--card-bg); color: var(--text-color); padding: 25px; border-radius: 8px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
+        .options-container { display: flex; flex-direction: column; gap: 10px; margin-top: 20px; }
+        .option-btn { background-color: var(--panel-bg); color: var(--text-color); padding: 12px; border: 1px solid #ced4da; text-align: left; transition: background-color 0.3s; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        .option-btn:hover { background-color: #e4e7eb; }
+        [data-theme="dark"] .option-btn:hover { background-color: #555555; }
+    </style>
+</head>
+<body>
+    <video class="video-background" id="bg-video" autoplay loop muted playsinline><source src="bg.mp4" type="video/mp4"></video>
+    <audio id="audio-correct" src="correct.mp3"></audio>
+    <audio id="audio-wrong" src="wrong.mp3"></audio>
+    <audio id="audio-bg" src="bg.mp3" loop></audio>
+
+    <div class="top-actions">
+        <button class="btn-action" id="mute-btn" onclick="toggleMute()">Mute 🎵</button>
+        <button class="btn-action" id="theme-toggle-btn" onclick="toggleTheme()">Dark Mode 🌙</button>
+    </div>
+
+    <div class="intro-overlay" id="intro-screen">
+        <h1>සාමාන්‍ය පෙළ / උසස් පෙළ ඓතිහාසික ස්ථාන ලකුණු කිරීම</h1>
+        <p>ඉතිහාසය විෂය නිර්දේශයේ සිතියම් ලකුණු කිරීමේ ප්‍රශ්න පත්‍රයට ඉතා පහසුවෙන් ඉහළම ලකුණු ලබාගැනීම සඳහා, ශ්‍රී ලංකාවේ ප්‍රධාන ඓතිහාසික ගංගා පද්ධතිය, වැව්, වරායන්, රාජධානී, උපරාජධානී, පළාත් සහ ප්‍රාග් ඓතිහාසික ස්ථාන නිවැරදිව පුහුණු විය හැකි අන්තර්ක්‍රියාකාරී අධ්‍යාපනික යෙදවුම.</p>
+        <button class="btn-start" onclick="startApp()">ඇතුළු වන්න</button>
+        <div style="font-size: 14px; font-weight: bold; color: var(--gold-color);">Created by Binada Thathsilu</div>
+    </div>
+
+    <h1>සාමාන්‍ය පෙළ හා උසස් පෙළ සිතියම් ලකුණු කිරීම</h1>
+    <div class="category-filter-panel">
+        <label class="category-label"><input type="checkbox" id="chk-rivers" checked onchange="handleCategoryChange()"> ගංගා 💧</label>
+        <label class="category-label"><input type="checkbox" id="chk-tanks" checked onchange="handleCategoryChange()"> වැව් 💧</label>
+        <label class="category-label"><input type="checkbox" id="chk-ports" checked onchange="handleCategoryChange()"> වරායන් ⚓</label>
+        <label class="category-label"><input type="checkbox" id="chk-kingdoms" checked onchange="handleCategoryChange()"> රාජධානී 👑</label>
+        <label class="category-label"><input type="checkbox" id="chk-subkingdoms" checked onchange="handleCategoryChange()"> උපරාජධානී 🏹</label>
+        <label class="category-label"><input type="checkbox" id="chk-provinces" checked onchange="handleCategoryChange()"> පළාත් 📍</label>
+        <label class="category-label"><input type="checkbox" id="chk-prehistoric" checked onchange="handleCategoryChange()"> ප්‍රාග් ඓතිහාසික 🍃</label>
+    </div>
+
+    <div class="level-panel" id="difficulty-panel">
+        <button class="btn-level active" id="lvl-easy" onclick="setDifficulty('easy')">Easy</button>
+        <button class="btn-level" id="lvl-hard" onclick="setDifficulty('hard')">Hard</button>
+        <button class="btn-level" id="lvl-pro" onclick="setDifficulty('pro')">Pro</button>
+    </div>
+     
+    <div class="controls">
+        <button id="btn-study" class="btn-mode active" onclick="setMode('study')">පාඩම් කිරීමේ ප්‍රකාරය (Study Mode)</button>
+        <button id="btn-quiz" class="btn-mode" onclick="setMode('quiz')">ප්‍රශ්නාවලි ප්‍රකාරය (Quiz Mode)</button>
+        <button id="btn-self" class="btn-mode" onclick="setMode('self')">ස්වයං ඇගයීම් ප්‍රකාරය (Self-Study Mode)</button>
+    </div>
+
+    <div class="score-board" id="score-board" style="display: none;">ලකුණු: <span id="score">0</span> / <span id="total">0</span></div>
+
+    <div class="self-study-panel" id="self-study-panel" style="display: none;">
+        <div id="self-study-question" style="font-size: 18px; font-weight: bold;"></div>
+        <div class="controls" style="margin-bottom: 0;">
+            <button id="btn-confirm" class="btn-confirm" onclick="confirmSelfStudyAnswer()" disabled>තහවුරු කරන්න</button>
+            <button id="btn-next" class="btn-next" onclick="nextSelfStudyQuestion()" style="display: none;">මීළඟ ප්‍රශ්නය</button>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <div class="map-wrapper" id="map-wrapper">
+            <img src="map.jpg" alt="Sri Lanka Map" class="base-map" id="sri-lanka-map">
+        </div>
+    </div>
+
+    <div class="history-dashboard">
+        <h3>📊 ඔබේ සමස්ත ප්‍රගති වාර්තාව</h3>
+        <div class="history-row"><span>වැඩිම ලකුණු ප්‍රතිශතය (High Score):</span><span id="stat-high-score">0%</span></div>
+        <div class="history-row"><span>වැඩියෙන්ම නිවැරදිව ලකුණු කළ ස්ථානය:</span><span id="stat-most-correct">-</span></div>
+        <div class="history-row"><span>වැඩියෙන්ම වැරදුණු ස්ථානය:</span><span id="stat-most-failed">-</span></div>
+    </div>
+
+    <div class="app-footer">&copy; 2026 Educational Map App | Created by Binada Thathsilu</div>
+
+    <div class="modal" id="quiz-modal">
+        <div class="modal-content">
+            <h3 id="modal-title">මෙම ස්ථානය කුමක්ද?</h3>
+            <div class="options-container" id="options-container"></div>
+        </div>
+    </div>
+
+    <div class="modal" id="result-modal">
+        <div class="modal-content">
+            <h2 style="margin-top:0;">🎯 ප්‍රශ්නාවලිය අවසන්!</h2>
+            <div style="font-size:18px; font-weight:bold;">ඔබේ ලකුණු ප්‍රතිශතය: <span id="result-percentage">0%</span></div>
+            <div class="grade-box" id="result-grade">A+</div>
+            <div class="congrats-msg" id="result-congrats"></div>
+            <button class="btn-confirm" style="margin-top:20px; padding:10px 30px;" onclick="closeResultModal()">හරි</button>
+        </div>
+    </div>
+
+    <script>
+        const _0xBranding = "Binada Thathsilu";
+        const mapData = [
+            // [ගංගා, වැව්, වරායන්, රාජධානී, උපරාජධානී, පළාත් දත්ත... කලින් තිබුන ඒවා ඒ විදිහටම ඇත]
+            { id: 1, type: "river", name: "මල්වතු ඔය", ancient: "කදම්බ නදිය", x: 33.0, y: 33.0 },
+            { id: 2, type: "river", name: "කලා ඔය", ancient: "ගෝණ නදිය", x: 29.8, y: 43.5 },
+            { id: 3, type: "river", name: "දැදුරු ඔය", ancient: "ජජ්ජර නදිය", x: 26.5, y: 55.9 },
+            { id: 4, type: "river", name: "කැළණි ගඟ", ancient: "කල්‍යාණී නදිය", x: 27.4, y: 69.3 },
+            { id: 5, type: "river", name: "කළු ගඟ", ancient: "කාල නදිය", x: 29.1, y: 76.0 },
+            { id: 6, type: "river", name: "ගිං ගඟ", ancient: "ගිම්හ නදිය", x: 33.4, y: 85.4 },
+            { id: 7, type: "river", name: "නිල්වලා ගඟ", ancient: "නීලවලා නදිය", x: 42.2, y: 88.7 },
+            { id: 8, type: "river", name: "වලවේ ගඟ", ancient: "වන වාහිනී/වන නදී", x: 53.7, y: 85.7 },
+            { id: 9, type: "river", name: "කිරිඳි ඔය", ancient: "කරින්ද නදිය", x: 62.2, y: 84.7 },
+            { id: 10, type: "river", name: "මැණික් ගඟ", ancient: "කප්පරකන්ද නදිය", x: 67.4, y: 81.9 },
+            { id: 11, type: "river", name: "කුඹුක්කන් ඔය", ancient: "කුම්භකන්ද නදිය", x: 72.2, y: 78.9 },
+            { id: 12, type: "river", name: "ගල් ඔය", ancient: "ගාල්හ ගංගාව", x: 77.2, y: 64.6 },
+            { id: 13, type: "river", name: "අඹන් ගඟ", ancient: "කාර ගංගා", x: 54.5, y: 53.0 },
+            { id: 14, type: "river", name: "මහවැලි ගඟ", ancient: "මහා වාලුකා නදිය", x: 62.9, y: 45.7 },
+            { id: 15, type: "river", name: "යාන් ඔය", ancient: "කුට්ඨකන්ද නදිය", x: 56.0, y: 35.0 },
+            { id: 16, type: "river", name: "කනගරායන් ආරු", ancient: "කනගරායන් ආරු", x: 45.5, y: 24.1 },
+
+            { id: 17, type: "tank", name: "ඉරණමඩුව ජලාශය", ancient: "ඉරණමඩුව ජලාශය", x: 45.5, y: 24.9 },
+            { id: 18, type: "tank", name: "යෝධ වැව", ancient: "යෝධ වැව", x: 33.7, y: 31.7 },
+            { id: 19, type: "tank", name: "මහකනදරා වැව", ancient: "මහකනදරා වැව", x: 46.2, y: 42.4 },
+            { id: 20, type: "tank", name: "නුවර වැව", ancient: "නුවර වැව", x: 42.6, y: 42.7 },
+            { id: 21, type: "tank", name: "නාච්චදූව වැව", ancient: "නාච්චදූව වැව", x: 44.6, y: 44.4 },
+            { id: 22, type: "tank", name: "රාජාංගනය වැව", ancient: "රාජාංගනය වැව", x: 39.1, y: 46.8 },
+            { id: 23, type: "tank", name: "කණ්ඩලම වැව", ancient: "කණ්ඩලම වැව", x: 48.9, y: 51.8 },
+            { id: 24, type: "tank", name: "කලා වැව", ancient: "කලා වැව", x: 45.7, y: 49.5 },
+            { id: 25, type: "tank", name: "වික්ටෝරියා ජලාශය", ancient: "වික්ටෝරියා ජලාශය", x: 47.7, y: 63.3 },
+            { id: 26, type: "tank", name: "රන්දෙණිගල ජලාශය", ancient: "රන්දෙණිගල ජලාශය", x: 50.6, y: 64.5 },
+            { id: 27, type: "tank", name: "රන්ටැඹේ ජලාශය", ancient: "රන්ටැඹේ ජලාශය", x: 55.7, y: 65.5 },
+            { id: 28, type: "tank", name: "කොත්මලේ ජලාශය", ancient: "කොත්මලේ ජලාශය", x: 46.2, y: 67.8 },
+            { id: 29, type: "tank", name: "උඩවලව ජලාශය", ancient: "උඩවලව ජලාශය", x: 51.1, y: 80.1 },
+            { id: 30, type: "tank", name: "ගල් ඔය ජලාශය", ancient: "සේනානායක සමුද්‍රය", x: 68.9, y: 66.2 },
+            { id: 31, type: "tank", name: "මාදුරු ඔය ජලාශය", ancient: "මාදුරු ඔය ජලාශය", x: 61.7, y: 57.3 },
+            { id: 32, type: "tank", name: "පරාක්‍රම සමුද්‍රය", ancient: "පරාක්‍රම සමුද්‍රය", x: 56.9, y: 51.9 },
+            { id: 33, type: "tank", name: "මින්නේරිය වැව", ancient: "මින්නේරිය වැව", x: 55.4, y: 49.7 },
+            { id: 34, type: "tank", name: "කවුඩුළු වැව", ancient: "කවුඩුළු වැව", x: 56.5, y: 46.9 },
+            { id: 35, type: "tank", name: "කන්තලේ වැව", ancient: "කන්තලේ වැව", x: 56.9, y: 43.3 },
+            { id: 36, type: "tank", name: "හුරුළු වැව", ancient: "හුරුළු වැව", x: 50.8, y: 45.7 },
+            { id: 37, type: "tank", name: "පදවිය වැව", ancient: "පදවිය වැව", x: 52.6, y: 34.1 },
+
+            { id: 38, type: "port", name: "දඹකොළපටුණ", ancient: "දඹකොළපටුණ", x: 33.4, y: 13.6 },
+            { id: 39, type: "port", name: "සූඛරතිත්ත", ancient: "සූඛරතිත්ත", x: 30.6, y: 15.8 },
+            { id: 40, type: "port", name: "මහාතිත්ත", ancient: "මහාතිත්ත", x: 31.9, y: 30.1 },
+            { id: 41, type: "port", name: "උරුවේලතිත්ත", ancient: "උරුවේලතිත්ත", x: 27.9, y: 42.0 },
+            { id: 42, type: "port", name: "කල්පිටිය", ancient: "කල්පිටිය", x: 24.2, y: 44.3 },
+            { id: 43, type: "port", name: "පුත්තලම", ancient: "පුත්තලම", x: 26.6, y: 47.8 },
+            { id: 44, type: "port", name: "හලාවත", ancient: "සලාවත්තොට", x: 25.7, y: 56.6 },
+            { id: 45, type: "port", name: "මීගමුව", ancient: "මීගමුව", x: 25.7, y: 64.0 },
+            { id: 46, type: "port", name: "කොළඹ", ancient: "කොළඹ", x: 25.7, y: 69.5 },
+            { id: 47, type: "port", name: "කළුතර", ancient: "කාලතිත්ථ", x: 28.0, y: 76.7 },
+            { id: 48, type: "port", name: "බෙන්තොට", ancient: "බෙන්තොට", x: 29.6, y: 82.3 },
+            { id: 49, type: "port", name: "ගාල්ල", ancient: "ගාල්ල", x: 34.9, y: 87.7 },
+            { id: 50, type: "port", name: "මාතර", ancient: "මාතර", x: 42.0, y: 89.5 },
+            { id: 51, type: "port", name: "දෙවුන්දර", ancient: "දෙවුන්දර", x: 44.5, y: 89.9 },
+            { id: 52, type: "port", name: "වැලිගම", ancient: "වැලිගම", x: 39.3, y: 89.2 },
+            { id: 53, type: "port", name: "ගොඩවාය", ancient: "ගොඩවාය", x: 56.9, y: 87.1 },
+            { id: 54, type: "port", name: "හම්බන්තොට", ancient: "හම්බන්තොට", x: 58.8, y: 86.5 },
+            { id: 55, type: "port", name: "තොටලුතොට", ancient: "තොටලුතොට", x: 64.3, y: 84.8 },
+            { id: 56, type: "port", name: "මඩකලපුව", ancient: "මඩකලපුව", x: 75.3, y: 55.8 },
+            { id: 57, type: "port", name: "ලංකාපටුන", ancient: "ලංකාපටුන", x: 68.0, y: 42.5 },
+            { id: 58, type: "port", name: "කොට්ටියාරම", ancient: "කොට්ටියාරම", x: 66.6, y: 40.8 },
+            { id: 59, type: "port", name: "ත්‍රීකුණාමලය", ancient: "ගෝකණ්ණ තිත්ත", x: 63.9, y: 39.1 },
+            { id: 60, type: "port", name: "පල්ලවංකය", ancient: "පල්ලවංකය", x: 59.4, y: 32.4 },
+
+            { id: 61, type: "kingdom", name: "අනුරාධපුරය", ancient: "අනුරාධපුරය", x: 42.0, y: 42.2 },
+            { id: 62, type: "kingdom", name: "පොළොන්නරුව", ancient: "පොළොන්නරුව", x: 57.7, y: 50.7 },
+            { id: 63, type: "kingdom", name: "දඹදෙණිය", ancient: "දඹදෙණිය", x: 34.5, y: 60.9 },
+            { id: 64, type: "kingdom", name: "යාපහුව", ancient: "යාපහුව", x: 38.2, y: 53.4 },
+            { id: 65, type: "kingdom", name: "කුරුණෑගල", ancient: "කුරුණෑගල", x: 38.3, y: 60.2 },
+            { id: 66, type: "kingdom", name: "ගම්පොළ", ancient: "ගම්පොළ", x: 47.3, y: 58.3 },
+            { id: 67, type: "kingdom", name: "කෝට්ටේ", ancient: "කෝට්ටේ", x: 26.0, y: 69.6 },
+            { id: 68, type: "kingdom", name: "මහනුවර", ancient: "මහනුවර", x: 46.8, y: 63.3 },
+
+            { id: 69, type: "subkingdom", name: "සීතාවක", ancient: "සීතාවක", x: 35.1, y: 69.4 },
+            { id: 70, type: "subkingdom", name: "රයිගම", ancient: "රයිගම", x: 29.6, y: 75.1 },
+            { id: 71, type: "subkingdom", name: "පඬුවස්නුවර", ancient: "පඬුවස්නුවර", x: 31.7, y: 57.3 },
+            { id: 72, type: "subkingdom", name: "යාපනය", ancient: "යාපනය", x: 34.6, y: 15.8 },
+            { id: 73, type: "subkingdom", name: "මහානාගහුල", ancient: "මහානාගහුල", x: 52.6, y: 85.0 },
+            { id: 74, type: "subkingdom", name: "දැදිගම", ancient: "දැදිගම", x: 36.3, y: 64.3 },
+            { id: 75, type: "subkingdom", name: "මාගම", ancient: "මාගම", x: 60.9, y: 83.8 },
+            { id: 76, type: "subkingdom", name: "කතරගම", ancient: "කතරගම", x: 63.4, y: 80.4 },
+
+            { id: 77, type: "province", name: "බස්නාහිර පළාත", ancient: "බස්නාහිර", x: 30.5, y: 71.9 },
+            { id: 78, type: "province", name: "දකුණු පළාත", ancient: "දකුණු", x: 45.0, y: 85.0 },
+            { id: 79, type: "province", name: "මධ්‍යම පළාත", ancient: "මධ්‍යම", x: 48.5, y: 60.2 },
+            { id: 80, type: "province", name: "වයඹ පළාත", ancient: "වයඹ", x: 36.6, y: 53.3 },
+            { id: 81, type: "province", name: "උතුරු මැද පළාත", ancient: "උතුරු මැද", x: 48.0, y: 45.0 },
+            { id: 82, type: "province", name: "උතුරු පළාත", ancient: "උතුරු", x: 42.8, y: 25.9 },
+            { id: 83, type: "province", name: "නැගෙනහිර පළාත", ancient: "නැගෙනහිර", x: 66.0, y: 56.8 },
+            { id: 84, type: "province", name: "ඌව පළාත", ancient: "ඌව", x: 60.0, y: 75.0 },
+            { id: 85, type: "province", name: "සබරගමුව පළාත", ancient: "සබරගමුව", x: 38.0, y: 70.0 },
+
+            // අලුතින් එකතු වන ප්‍රාග් ඓතිහාසික ස්ථාන (Prehistoric sites)
+            { id: 86, type: "prehistoric", name: "උඩරංචාමඩම", ancient: "උඩරංචාමඩම", x: 48.3, y: 81.4 },
+            { id: 87, type: "prehistoric", name: "බටදොඹලෙන", ancient: "බටදොඹලෙන", x: 37.3, y: 73.8 },
+            { id: 88, type: "prehistoric", name: "පාහියන්ගල", ancient: "පාහියන්ගල", x: 35.3, y: 75.9 },
+            { id: 89, type: "prehistoric", name: "බෙල්ලන්බැඳිපැලැස්ස", ancient: "බෙල්ලන්බැඳිපැලැස්ස", x: 44.8, y: 74.6 },
+            { id: 90, type: "prehistoric", name: "බුන්දල/පතිරාජවෙල", ancient: "බුන්දල/පතිරාජවෙල", x: 62.0, y: 85.6 },
+            { id: 91, type: "prehistoric", name: "මිනිහාගල්කන්ද", ancient: "මිනිහාගල්කන්ද", x: 71.4, y: 81.0 },
+            { id: 92, type: "prehistoric", name: "අත්තනගොඩ අළු ලෙන", ancient: "අත්තනගොඩ අළු ලෙන", x: 44.3, y: 63.1 },
+            { id: 93, type: "prehistoric", name: "හෝටන්තැන්න", ancient: "හෝටන්තැන්න", x: 49.9, y: 72.8 },
+            { id: 94, type: "prehistoric", name: "රාවණාඇල්ල", ancient: "රාවණාඇල්ල", x: 58.0, y: 69.7 },
+            { id: 95, type: "prehistoric", name: "බණ්ඩාරවෙල", ancient: "බණ්ඩාරවෙල", x: 58.3, y: 68.7 },
+            { id: 96, type: "prehistoric", name: "ඉබ්බන්කටුව", ancient: "ඉබ්බන්කටුව", x: 45.6, y: 55.1 },
+            { id: 97, type: "prehistoric", name: "අලිගල/පොතාන", ancient: "අලිගල/පොතාන", x: 51.4, y: 52.2 },
+            { id: 98, type: "prehistoric", name: "ඉරණමඩුව", ancient: "ඉරණමඩුව", x: 44.5, y: 24.9 },
+            { id: 99, type: "prehistoric", name: "කඳුරුගොඩ", ancient: "කඳුරුගොඩ", x: 33.7, y: 14.4 },
+            { id: 100, type: "prehistoric", name: "කයිට්ස්(ඌරාතොට)", ancient: "කයිට්ස්(ඌරාතොට)", x: 31.3, y: 16.0 },
+            { id: 101, type: "prehistoric", name: "සීගිරිය", ancient: "සීගිරිය", x: 50.6, y: 51.5 },
+            { id: 102, type: "prehistoric", name: "සිතුල්පව්ව", ancient: "සිතුල්පව්ව", x: 62.9, y: 81.4 },
+            { id: 103, type: "prehistoric", name: "දඹුල්ල", ancient: "දඹුල්ල", x: 46.3, y: 51.8 },
+            { id: 104, type: "prehistoric", name: "මහියංගනය", ancient: "මහියංගනය", x: 57.1, y: 64.7 }
+        ];
+
+        // ... ඉතිරි JavaScript කොටස එලෙසම තබා ගන්න ...
+        // (නමුත් handleCategoryChange function එකට අලුත් checkbox එක එකතු කිරීමට අමතක නොකරන්න)
+        
+        function handleCategoryChange() {
+            activeCategories = [];
+            if(document.getElementById('chk-rivers').checked) activeCategories.push('river');
+            if(document.getElementById('chk-tanks').checked) activeCategories.push('tank');
+            if(document.getElementById('chk-ports').checked) activeCategories.push('port');
+            if(document.getElementById('chk-kingdoms').checked) activeCategories.push('kingdom');
+            if(document.getElementById('chk-subkingdoms').checked) activeCategories.push('subkingdom');
+            if(document.getElementById('chk-provinces').checked) activeCategories.push('province');
+            if(document.getElementById('chk-prehistoric').checked) activeCategories.push('prehistoric');
+            
+            generateQuizDataset();
+            if (currentMode === 'self') {
+                startSelfStudyMode();
+            } else {
+                renderPins();
+            }
+        }
+        // ... (අනෙක් සියලුම function එලෙසම පවතී)
+        const correctSound = document.getElementById('audio-correct');
+        const wrongSound = document.getElementById('audio-wrong');
+        const bgMusic = document.getElementById('audio-bg');
+        const bgVideo = document.getElementById('bg-video');
+
+        let currentMode = 'study';
+        let currentDifficulty = 'easy'; 
+        let score = 0;
+        let activePinId = null;
+        let quizQuestionsAnswered = 0; 
+        let activeCategories = ['river', 'tank', 'port', 'kingdom', 'subkingdom', 'province', 'prehistoric'];
+
+        let quizActiveDataset = []; 
+        let selfStudyQueue = [];
+        let currentSelfStudyIndex = 0;
+        let currentGuess = null;
+
+        let stats = { highScore: 0, correctCounts: {}, failCounts: {} };
+
+        const mapWrapper = document.getElementById('map-wrapper');
+        const mapImage = document.getElementById('sri-lanka-map');
+        const scoreBoard = document.getElementById('score-board');
+        const quizModal = document.getElementById('quiz-modal');
+        const selfStudyPanel = document.getElementById('self-study-panel');
+
+        function startApp() {
+            if(_0xBranding !== "Binada Thathsilu") {
+                alert("Security Error: Original branding modified.");
+                return;
+            }
+            bgMusic.play().catch(error => console.log("Audio deferred."));
+            document.getElementById('intro-screen').style.opacity = '0';
+            document.getElementById('intro-screen').style.visibility = 'hidden';
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const toggleBtn = document.getElementById('theme-toggle-btn');
+            if (currentTheme === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                toggleBtn.innerText = "Dark Mode 🌙";
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                toggleBtn.innerText = "Day Mode ☀️";
+            }
+        }
+
+        function toggleMute() {
+            const muteBtn = document.getElementById('mute-btn');
+            if (bgMusic.muted) {
+                bgMusic.muted = false;
+                if(bgVideo) bgVideo.muted = false;
+                muteBtn.innerText = "Mute 🎵";
+            } else {
+                bgMusic.muted = true;
+                if(bgVideo) bgVideo.muted = true;
+                muteBtn.innerText = "Unmute 🔇";
+            }
+        }
+
+        function initApp() {
+            generateQuizDataset();
+            renderPins();
+            
+            mapImage.addEventListener('click', function(e) {
+                if (currentMode !== 'self' || currentGuess !== null) return;
+                const rect = mapImage.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+                const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+                
+                removeUserGuessPin();
+                const userPin = document.createElement('div');
+                userPin.id = 'user-guess-pin';
+                userPin.className = 'pin user-guess';
+                userPin.style.left = `${x}%`;
+                userPin.style.top = `${y}%`;
+                mapWrapper.appendChild(userPin);
+                
+                document.getElementById('btn-confirm').disabled = false;
+                currentGuess = { x: parseFloat(x), y: parseFloat(y) };
+            });
+        }
+
+        function setDifficulty(level) {
+            currentDifficulty = level;
+            document.getElementById('lvl-easy').classList.toggle('active', level === 'easy');
+            document.getElementById('lvl-hard').classList.toggle('active', level === 'hard');
+            document.getElementById('lvl-pro').classList.toggle('active', level === 'pro');
+            handleCategoryChange(); 
+        }
+
+        function generateQuizDataset() {
+            const baseData = mapData.filter(item => activeCategories.includes(item.type));
+            const totalItems = baseData.length;
+            let percentage = 1.0; 
+
+            if (currentDifficulty === 'easy') percentage = 0.2;
+            else if (currentDifficulty === 'hard') percentage = 0.5;
+
+            const countToSelect = Math.max(1, Math.round(totalItems * percentage));
+            quizActiveDataset = [...baseData].sort(() => Math.random() - 0.5).slice(0, countToSelect);
+            document.getElementById('total').innerText = quizActiveDataset.length;
+        }
+
+        function renderPins() {
+            const existingPins = mapWrapper.querySelectorAll('.pin');
+            existingPins.forEach(pin => pin.remove());
+
+            if (currentMode === 'self') return;
+
+            const visibleData = (currentMode === 'study') ? mapData.filter(item => activeCategories.includes(item.type)) : quizActiveDataset;
+
+            visibleData.forEach(place => {
+                const pin = document.createElement('div');
+                pin.className = `pin type-${place.type}`;
+                pin.style.left = `${place.x}%`;
+                pin.style.top = `${place.y}%`;
+                pin.setAttribute('data-id', place.id);
+
+                if (currentMode === 'study') {
+                    const tooltip = document.createElement('span');
+                    tooltip.className = 'tooltip';
+                    tooltip.innerHTML = `<strong>${place.name}</strong><br>පැරණි නම: ${place.ancient}`;
+                    pin.appendChild(tooltip);
+                } else if (currentMode === 'quiz') {
+                    pin.addEventListener('click', () => handlePinClick(place.id));
+                }
+
+                mapWrapper.appendChild(pin);
+            });
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('btn-study').classList.toggle('active', mode === 'study');
+            document.getElementById('btn-quiz').classList.toggle('active', mode === 'quiz');
+            document.getElementById('btn-self').classList.toggle('active', mode === 'self');
+            
+            const diffPanel = document.getElementById('difficulty-panel');
+            if (mode === 'study') {
+                diffPanel.style.display = 'none';
+                scoreBoard.style.display = 'none';
+                selfStudyPanel.style.display = 'none';
+                renderPins();
+            } else {
+                diffPanel.style.display = 'flex';
+                if (mode === 'quiz') {
+                    score = 0; quizQuestionsAnswered = 0;
+                    document.getElementById('score').innerText = score;
+                    scoreBoard.style.display = 'block';
+                    selfStudyPanel.style.display = 'none';
+                    generateQuizDataset();
+                    renderPins();
+                } else if (mode === 'self') {
+                    scoreBoard.style.display = 'none';
+                    selfStudyPanel.style.display = 'flex';
+                    startSelfStudyMode();
+                }
+            }
+        }
+
+        function handlePinClick(id) {
+            const pin = mapWrapper.querySelector(`.pin[data-id="${id}"]`);
+            if (pin.classList.contains('answered') || pin.classList.contains('failed')) return;
+
+            activePinId = id;
+            const target = mapData.find(r => r.id === id);
+            
+            let options = [target];
+            while (options.length < 4 && options.length < quizActiveDataset.length) {
+                const randomItem = quizActiveDataset[Math.floor(Math.random() * quizActiveDataset.length)];
+                if (!options.some(o => o.id === randomItem.id)) {
+                    options.push(randomItem);
+                }
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            const container = document.getElementById('options-container');
+            container.innerHTML = '';
+            
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = `${opt.name} (${opt.ancient})`;
+                btn.onclick = () => checkAnswer(opt.id);
+                container.appendChild(btn);
+            });
+
+            quizModal.style.display = 'flex';
+        }
+
+        function checkAnswer(selectedId) {
+            quizModal.style.display = 'none';
+            const pin = mapWrapper.querySelector(`.pin[data-id="${activePinId}"]`);
+            const target = mapData.find(r => r.id === activePinId);
+            quizQuestionsAnswered++;
+            
+            if (selectedId === activePinId) {
+                correctSound.currentTime = 0;
+                correctSound.play();
+                score++;
+                document.getElementById('score').innerText = score;
+                pin.classList.add('answered');
+                stats.correctCounts[target.name] = (stats.correctCounts[target.name] || 0) + 1;
+                setTimeout(() => { alert('💥 නිවැරදියි!'); checkQuizCompletion(); }, 100);
+            } else {
+                wrongSound.currentTime = 0;
+                wrongSound.play();
+                pin.classList.add('failed'); 
+                stats.failedCounts[target.name] = (stats.failedCounts[target.name] || 0) + 1;
+                setTimeout(() => { alert(`❌ වැරදියි! නිවැරදි පිළිතුර: ${target.name} (${target.ancient})`); checkQuizCompletion(); }, 100);
+            }
+        }
+
+        function checkQuizCompletion() {
+            if (quizQuestionsAnswered >= quizActiveDataset.length) {
+                showFinalResults(score, quizActiveDataset.length);
+            }
+        }
+
+        function startSelfStudyMode() {
+            selfStudyQueue = [...quizActiveDataset].sort(() => Math.random() - 0.5);
+            currentSelfStudyIndex = 0;
+            score = 0; 
+            showSelfStudyQuestion();
+        }
+
+        function showSelfStudyQuestion() {
+            removeUserGuessPin();
+            removeTrueLocationPin();
+            renderPins(); 
+            currentGuess = null;
+            
+            document.getElementById('btn-confirm').style.display = 'inline-block';
+            document.getElementById('btn-confirm').disabled = true;
+            document.getElementById('btn-next').style.display = 'none';
+            
+            if (currentSelfStudyIndex < selfStudyQueue.length) {
+                const currentPlace = selfStudyQueue[currentSelfStudyIndex];
+                let prefix = '💧 ගංගාව';
+                if(currentPlace.type === 'tank') prefix = '💧 වැව/ජලාශය';
+                else if(currentPlace.type === 'port') prefix = '⚓ පැරණි වරාය';
+                else if(currentPlace.type === 'kingdom') prefix = '👑 රාජධානිය';
+                else if(currentPlace.type === 'subkingdom') prefix = '🏹 උපරාජධානිය';
+                else if(currentPlace.type === 'province') prefix = '📍 පළාත';
+                else if(currentPlace.type === 'prehistoric') prefix = '🍃 ප්‍රාග් ඓතිහාසික';
+                
+                document.getElementById('self-study-question').innerText = `🎯 ලකුණු කරන්න [${prefix}]: ${currentPlace.name} (${currentPlace.ancient})`;
+            } else {
+                document.getElementById('self-study-question').innerText = "🎉 සියලුම ස්ථාන ලකුණු කර අවසන්!";
+                document.getElementById('btn-confirm').style.display = 'none';
+                showFinalResults(score, selfStudyQueue.length);
+            }
+        }
+
+        function confirmSelfStudyAnswer() {
+            if (!currentGuess) return;
+            const target = selfStudyQueue[currentSelfStudyIndex];
+            
+            const truePin = document.createElement('div');
+            truePin.id = 'true-location-pin';
+            truePin.className = 'pin true-location';
+            truePin.style.left = `${target.x}%`;
+            truePin.style.top = `${target.y}%`;
+            
+            const tooltip = document.createElement('span');
+            tooltip.className = 'tooltip';
+            tooltip.style.visibility = 'visible';
+            tooltip.style.opacity = '1';
+            tooltip.innerHTML = `<strong>නියම ස්ථානය මෙතනයි!</strong>`;
+            truePin.appendChild(tooltip);
+            mapWrapper.appendChild(truePin);
+            
+            const distance = Math.sqrt(Math.pow(currentGuess.x - target.x, 2) + Math.pow(currentGuess.y - target.y, 2));
+            if (distance <= 7.0) {
+                correctSound.currentTime = 0;
+                correctSound.play();
+                score++;
+                stats.correctCounts[target.name] = (stats.correctCounts[target.name] || 0) + 1;
+            } else {
+                wrongSound.currentTime = 0;
+                wrongSound.play();
+                stats.failedCounts[target.name] = (stats.failedCounts[target.name] || 0) + 1;
+            }
+            
+            document.getElementById('btn-confirm').style.display = 'none';
+            document.getElementById('btn-next').style.display = 'inline-block';
+        }
+
+        function nextSelfStudyQuestion() {
+            currentSelfStudyIndex++;
+            showSelfStudyQuestion();
+        }
+
+        function showFinalResults(obtained, total) {
+            const percentage = Math.round((obtained / total) * 100);
+            if (percentage > stats.highScore) {
+                stats.highScore = percentage;
+                document.getElementById('stat-high-score').innerText = `${percentage}%`;
+            }
+            updateAnalyticsDashboard();
+
+            document.getElementById('result-percentage').innerText = `${percentage}%`;
+            const gradeEl = document.getElementById('result-grade');
+            const congratsEl = document.getElementById('result-congrats');
+            gradeEl.className = "grade-box";
+            congratsEl.innerText = "";
+
+            if (percentage >= 90) {
+                gradeEl.innerText = "A+";
+                gradeEl.classList.add("grade-a-plus");
+                congratsEl.innerText = "🎉 සුබ පැතුම්! ඔබ ඉතා විශිෂ්ට ලෙස සිතියම ලකුණු කර ඇත!";
+            } else if (percentage >= 75) {
+                gradeEl.innerText = "A";
+                gradeEl.classList.add("grade-a");
+                congratsEl.innerText = "👍 සුබ පැතුම් ඔබ හොඳට කරා!";
+            } else if (percentage >= 65) {
+                gradeEl.innerText = "B";
+                gradeEl.classList.add("grade-b");
+            } else if (percentage >= 50) {
+                gradeEl.innerText = "C";
+                gradeEl.classList.add("grade-c");
+            } else {
+                gradeEl.innerText = (percentage >= 35) ? "S" : "F";
+                gradeEl.classList.add("grade-f");
+            }
+            document.getElementById('result-modal').style.display = 'flex';
+        }
+
+        function closeResultModal() {
+            document.getElementById('result-modal').style.display = 'none';
+            setMode(currentMode); 
+        }
+
+        function updateAnalyticsDashboard() {
+            let mostCorrect = "-";
+            let maxCorrectValue = 0;
+            for (let place in stats.correctCounts) {
+                if (stats.correctCounts[place] > maxCorrectValue) {
+                    maxCorrectValue = stats.correctCounts[place];
+                    mostCorrect = `${place} (${maxCorrectValue} වාරයක්)`;
+                }
+            }
+            let mostFailed = "-";
+            let maxFailValue = 0;
+            for (let place in stats.failedCounts) {
+                if (stats.failedCounts[place] > maxFailValue) {
+                    maxFailValue = stats.failedCounts[place];
+                    mostFailed = `${place} (${maxFailValue} වාරයක්)`;
+                }
+            }
+            document.getElementById('stat-most-correct').innerText = mostCorrect;
+            document.getElementById('stat-most-failed').innerText = mostFailed;
+        }
+
+        function removeUserGuessPin() { const p = document.getElementById('user-guess-pin'); if (p) p.remove(); }
+        function removeTrueLocationPin() { const p = document.getElementById('true-location-pin'); if (p) p.remove(); }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
