@@ -117,12 +117,14 @@
     <div class="score-board" id="score-board" style="display: none;">ලකුණු: <span id="score">0</span> / <span id="total">0</span></div>
 
     <div class="self-study-panel" id="self-study-panel" style="display: none;">
-        <div id="self-study-question" style="font-size: 18px; font-weight: bold;"></div>
-        <div class="controls" style="margin-bottom: 0;">
-            <button id="btn-confirm" class="btn-confirm" onclick="confirmSelfStudyAnswer()" disabled>තහවුරු කරන්න</button>
-            <button id="btn-next" class="btn-next" onclick="nextSelfStudyQuestion()" style="display: none;">මීළඟ ප්‍රශ්නය</button>
-        </div>
+    <div id="self-study-progress" style="font-size: 15px; font-weight: bold; color: #e67e22; margin-bottom: 8px;"></div>
+    
+    <div id="self-study-question" style="font-size: 18px; font-weight: bold;"></div>
+    <div class="controls" style="margin-bottom: 0;">
+        <button id="btn-confirm" class="btn-confirm" onclick="confirmSelfStudyAnswer()" disabled>තහවුරු කරන්න</button>
+        <button id="btn-next" class="btn-next" onclick="nextSelfStudyQuestion()" style="display: none;">මීළඟ ප්‍රශ්නය</button>
     </div>
+</div>
 
     <div class="app-container">
         <div class="map-wrapper" id="map-wrapper">
@@ -530,6 +532,8 @@ function showSelfStudyQuestion() {
     document.getElementById('btn-next').style.display = 'none';
     
     if (currentSelfStudyIndex < selfStudyQueue.length) {
+                document.getElementById('self-study-progress').innerText = `📍 ස්ථානය: ${currentSelfStudyIndex + 1} / ${selfStudyQueue.length}`;
+
         const currentPlace = selfStudyQueue[currentSelfStudyIndex];
         let prefix = '💧 ගංගාව';
         if(currentPlace.type === 'tank') prefix = '💧 වැව/ජලාශය';
@@ -541,6 +545,7 @@ function showSelfStudyQuestion() {
         
         document.getElementById('self-study-question').innerText = `🎯 ලකුණු කරන්න [${prefix}]: ${currentPlace.name} (${currentPlace.ancient})`;
     } else {
+        document.getElementById('self-study-progress').innerText = "";
         document.getElementById('self-study-question').innerText = "🎉 සියලුම ස්ථාන ලකුණු කර අවසන්!";
         document.getElementById('btn-confirm').style.display = 'none';
         showFinalResults(score, selfStudyQueue.length);
