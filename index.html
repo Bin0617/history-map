@@ -5,13 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>සාමාන්‍ය පෙළ හා උසස් පෙළ සිතියම් ලකුණු කිරීම</title>
     <style>
-        :root { --primary-color: #2c3e50; --accent-color: #e74c3c; --success-color: #2ecc71; --bg-color: #f8f9fa; --gold-color: #f1c40f; --card-bg: #ffffff; --text-color: #2c3e50; --panel-bg: #dfe6e9; }
+        :root { 
+            --primary-color: #2c3e50; 
+            --accent-color: #e74c3c; 
+            --success-color: #2ecc71; 
+            --bg-color: #f8f9fa; 
+            --gold-color: #f1c40f; 
+            --card-bg: #ffffff; 
+            --text-color: #2c3e50; 
+            --panel-bg: #dfe6e9; 
+        }
         [data-theme="dark"] { --bg-color: #1e272e; --card-bg: #2d3436; --text-color: #f5f6fa; --primary-color: #00cec9; --panel-bg: #3d3d3d; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; color: var(--text-color); min-height: 100vh; box-sizing: border-box; }
         .video-background { position: fixed; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1; opacity: 0.25; pointer-events: none; }
-        body { background-color: var(--bg-color); transition: background-color 0.4s ease, color 0.4s ease; }
+        body { background-color: var(--bg-color); transition: background-color 0.5s ease, color 0.5s ease; }
         .top-actions { position: absolute; top: 20px; right: 20px; display: flex; gap: 10px; z-index: 500; }
-        .btn-action { background-color: var(--primary-color); color: white; padding: 8px 15px; font-size: 14px; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); border: none; cursor: pointer; font-weight: bold; }
+        .btn-action { background-color: var(--primary-color); color: white; padding: 8px 15px; font-size: 14px; border-radius: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.2); border: none; cursor: pointer; font-weight: bold; transition: background-color 0.3s; }
         .intro-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(-45deg, #1e3c72, #2a5298, #134e5e, #71b280); background-size: 400% 400%; animation: gradientBg 10s ease infinite; z-index: 1000; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; text-align: center; transition: opacity 0.6s ease, visibility 0.6s; }
         @keyframes gradientBg { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         .intro-overlay h1 { font-size: 34px; color: var(--gold-color); margin-bottom: 15px; padding: 0 15px; text-shadow: 2px 2px 5px rgba(0,0,0,0.5); font-weight: 800; }
@@ -20,14 +29,14 @@
         .btn-start:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(241, 196, 15, 0.6); background-color: #f39c12; }
         h1 { color: var(--text-color); margin-bottom: 10px; text-align: center; text-shadow: 1px 1px 2px rgba(255,255,255,0.5); }
         .controls { margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
-        .category-filter-panel { background-color: var(--card-bg); border: 2px solid var(--primary-color); padding: 12px 25px; border-radius: 30px; margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-weight: bold; }
+        .category-filter-panel { background-color: var(--card-bg); border: 2px solid var(--primary-color); padding: 12px 25px; border-radius: 30px; margin-bottom: 15px; display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.1); font-weight: bold; transition: border-color 0.5s; }
         .category-label { display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; }
         .category-label input { width: 18px; height: 18px; cursor: pointer; }
         .level-panel { display: flex; gap: 10px; margin-bottom: 20px; background: var(--panel-bg); padding: 6px; border-radius: 25px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .btn-level { padding: 8px 18px; font-size: 14px; border-radius: 20px; background: transparent; color: var(--text-color); border: none; font-weight: bold; }
         .btn-level.active { background-color: #e67e22; color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
         button { padding: 10px 20px; font-size: 16px; font-weight: bold; border: none; border-radius: 5px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 2px 5px rgba(0,0,0,0.08); }
-        .btn-mode { background-color: var(--card-bg); color: var(--text-color); border: 2px solid var(--primary-color); }
+        .btn-mode { background-color: var(--card-bg); color: var(--text-color); border: 2px solid var(--primary-color); transition: border-color 0.5s; }
         .btn-mode.active { background-color: #16a085; color: white; border-color: #16a085; }
         .score-board { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: var(--text-color); text-align: center; }
         
@@ -105,10 +114,10 @@
         .grade-box { font-size: 64px; font-weight: 900; margin: 15px 0; text-shadow: 2px 2px 5px rgba(0,0,0,0.1); }
         .grade-a-plus { color: #2ecc71; } .grade-a { color: #27ae60; } .grade-b { color: #2980b9; } .grade-c { color: #f39c12; } .grade-f { color: #c0392b; }
         .congrats-msg { font-size: 18px; font-weight: bold; color: #27ae60; margin-top: 10px; }
-        .history-dashboard { background-color: var(--card-bg); border: 2px solid var(--primary-color); padding: 15px 25px; border-radius: 12px; margin-top: 25px; width: 100%; max-width: 600px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); box-sizing: border-box; }
+        .history-dashboard { background-color: var(--card-bg); border: 2px solid var(--primary-color); padding: 15px 25px; border-radius: 12px; margin-top: 25px; width: 100%; max-width: 600px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); box-sizing: border-box; transition: border-color 0.5s; }
         .history-dashboard h3 { margin-top: 0; text-align: center; border-bottom: 2px solid var(--panel-bg); padding-bottom: 5px; }
         .history-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 15px; font-weight: bold; }
-        .history-row span:last-child { color: #e67e22; }
+        .history-row span:last-child { color: #e67e22; transition: color 0.5s; }
         .app-footer { margin-top: 30px; font-size: 13px; font-weight: bold; color: var(--text-color); opacity: 0.7; text-align: center; letter-spacing: 0.5px; }
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; justify-content: center; align-items: center; }
         .modal-content { background: var(--card-bg); color: var(--text-color); padding: 25px; border-radius: 8px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
@@ -122,26 +131,32 @@
     <video class="video-background" id="bg-video" autoplay loop muted playsinline><source src="bg.mp4" type="video/mp4"></video>
     <audio id="audio-correct" src="correct.mp3"></audio>
     <audio id="audio-wrong" src="wrong.mp3"></audio>
+    
     <audio id="audio-bg" src="bg.mp3" loop></audio>
+    <audio id="audio-bg2" src="bg2.mp3" loop></audio>
+    <audio id="audio-bg3" src="bg3.mp3" loop></audio>
+    <audio id="audio-bg4" src="bg4.mp3" loop></audio>
+    <audio id="audio-bg5" src="bg5.mp3" loop></audio>
 
     <div class="top-actions">
+        <button class="btn-action" id="change-music-btn" onclick="changeMusic()">සංගීතය මාරු කරන්න 🎵 (Track 1)</button>
         <button class="btn-action" id="mute-btn" onclick="toggleMute()">Mute 🎵</button>
         <button class="btn-action" id="theme-toggle-btn" onclick="toggleTheme()">Dark Mode 🌙</button>
     </div>
 
     <div class="intro-overlay" id="intro-screen">
-        <h1>සාමාන්‍ය පෙළ / උසස් පෙළ ඓතිහාසික ස්ථාන ලකුණු කිරීම</h1>
-        <p>ඉතිහාසය විෂය නිර්දේශයේ සිතියම් ලකුණු කිරීමේ ප්‍රශ්න පත්‍රයට ඉතා පහසුවෙන් ඉහළම ලකුණු ලබාගැනීම සඳහා, ශ්‍රී ලංකාවේ ප්‍රධාන ඓතිහාසික ගංගා පද්ධතිය, වැව්, වරායන්, ਰਾජධානී, උපරාජධානී, පළාත් සහ ප්‍රාග් ඓතිහාසික ස්ථාන නිවැරදිව පුහුණු විය හැකි අන්තර්ක්‍රියාකාරී අධ්‍යාපනික යෙදවුම.</p>
+        <h1>සාමාන්‍ය... පෙළ / උසස් පෙළ ඓතිහාසික ස්ථාන ලකුණු කිරීම</h1>
+        <p>ඉතිහාසය විෂය නිර්දේශයේ සිතියම් ලකුණු කිරීමේ ප්‍රශ්න පත්‍රයට ඉතා පහසුවෙන් ඉහළම ලකුණු ලබාගැනීම සඳහා, ශ්‍රී ලංකාවේ ප්‍රධාන ඓතිහාසික ගංගා පද්ධතිය, වැව්, වරායන්, රාජධානී, උපරාජධානී, පළාත් සහ ප්‍රාග් ඓතිහාසික ස්ථාන නිවැරදිව පුහුණු විය හැකි අන්තර්ක්‍රියාකාරී අධ්‍යාපනික යෙදවුම.</p>
         <button class="btn-start" onclick="startApp()">ඇතුළු වන්න</button>
         <div style="font-size: 14px; font-weight: bold; color: var(--gold-color);">Created by Binada Thathsilu</div>
     </div>
 
     <h1>සාමාන්‍ය පෙළ හා උසස් පෙළ සිතියම් ලකුණු කිරීම</h1>
-    <div class="category-filter-panel">
+    <div class="category-filter-panel" id="category-panel">
         <label class="category-label"><input type="checkbox" id="chk-rivers" checked onchange="handleCategoryChange()"> ගංගා 💧</label>
         <label class="category-label"><input type="checkbox" id="chk-tanks" checked onchange="handleCategoryChange()"> වැව් 💧</label>
         <label class="category-label"><input type="checkbox" id="chk-ports" checked onchange="handleCategoryChange()"> වරායන් ⚓</label>
-        <label class="category-label"><input type="checkbox" id="chk-kingdoms" checked onchange="handleCategoryChange()"> ਰਾජධානී 👑</label>
+        <label class="category-label"><input type="checkbox" id="chk-kingdoms" checked onchange="handleCategoryChange()"> රාජධානී 👑</label>
         <label class="category-label"><input type="checkbox" id="chk-subkingdoms" checked onchange="handleCategoryChange()"> උපරාජධානිය 🏹</label>
         <label class="category-label"><input type="checkbox" id="chk-provinces" checked onchange="handleCategoryChange()"> පළාත් 📍</label>
         <label class="category-label"><input type="checkbox" id="chk-prehistoric" checked onchange="handleCategoryChange()"> ප්‍රාග් ඓතිහාසික 🍃</label>
@@ -187,7 +202,7 @@
         </div>
     </div>
 
-    <div class="history-dashboard">
+    <div class="history-dashboard" id="history-panel">
         <h3>📊 ඔබේ සමස්ත ප්‍රගති වාර්තාව</h3>
         <div class="history-row"><span>වැඩිම ලකුණු ප්‍රතිශතය (High Score):</span><span id="stat-high-score">0%</span></div>
         <div class="history-row"><span>වැඩියෙන්ම නිවැරදිව ලකුණු කළ ස්ථානය:</span><span id="stat-most-correct">-</span></div>
@@ -320,12 +335,12 @@
             { id: 96, type: "prehistoric", name: "ඉබ්බන්කටුව", ancient: "ඉබ්බන්කටුව", x: 45.6, y: 55.1 },
             { id: 97, type: "prehistoric", name: "අලිගල/පොතාන", ancient: "අලිගල/පොතාන", x: 51.4, y: 52.2 },
             { id: 98, type: "prehistoric", name: "ඉරණමඩුව", ancient: "ඉරණමඩුව", x: 44.5, y: 24.9 },
-            { id: 99, type: "prehistoric", name: "කඳුරුගොඩ", ancient: "කඳුරුගොඩ", x: 33.7, y: 14.4 },
-            { id: 100, type: "prehistoric", name: "කයිට්ස්(ඌරාතොට)", ancient: "කයිට්ස්(ඌරාතොට)", x: 31.3, y: 16.0 },
-            { id: 101, type: "prehistoric", name: "සීගිරිය", ancient: "සීගිරිය", x: 50.6, y: 51.5 },
-            { id: 102, type: "prehistoric", name: "සිතුල්පව්ව", ancient: "සිතුල්පව්ව", x: 62.9, y: 81.4 },
-            { id: 103, type: "prehistoric", name: "දඹුල්ල", ancient: "දඹුල්ල", x: 46.3, y: 51.8 },
-            { id: 104, type: "prehistoric", name: "මහියංගනය", ancient: "මහියංගනය", x: 57.1, y: 64.7 }
+            { id: 100, type: "prehistoric", name: "කඳුරුගොඩ", ancient: "කඳුරුගොඩ", x: 33.7, y: 14.4 },
+            { id: 101, type: "prehistoric", name: "කයිට්ස්(ඌරාතොට)", ancient: "කයිට්ස්(ඌරාතොට)", x: 31.3, y: 16.0 },
+            { id: 102, type: "prehistoric", name: "සීගිරිය", ancient: "සීගිරිය", x: 50.6, y: 51.5 },
+            { id: 103, type: "prehistoric", name: "සිතුල්පව්ව", ancient: "සිතුල්පව්ව", x: 62.9, y: 81.4 },
+            { id: 104, type: "prehistoric", name: "දඹුල්ල", ancient: "දඹුල්ල", x: 46.3, y: 51.8 },
+            { id: 105, type: "prehistoric", name: "මහියංගනය", ancient: "මහියංගනය", x: 57.1, y: 64.7 }
         ];
 
         function handleCategoryChange() {
@@ -348,8 +363,27 @@
        
         const correctSound = document.getElementById('audio-correct');
         const wrongSound = document.getElementById('audio-wrong');
-        const bgMusic = document.getElementById('audio-bg');
-        const bgVideo = document.getElementById('bg-video');
+
+        // 🎵 Music Tracks array & Dynamic Theme palette
+        const bgTracks = [
+            document.getElementById('audio-bg'),
+            document.getElementById('audio-bg2'),
+            document.getElementById('audio-bg3'),
+            document.getElementById('audio-bg4'),
+            document.getElementById('audio-bg5')
+        ];
+        
+        // 🎨 Music Track එක අනුව මාරු වන Color Themes
+        const musicThemes = [
+            { primary: "#2c3e50", gold: "#f1c40f", accent: "#e74c3c" }, // Track 1: Original Blue
+            { primary: "#1e3c72", gold: "#00d2d3", accent: "#ff6b6b" }, // Track 2: Ocean Cyan
+            { primary: "#4a148c", gold: "#ffeb3b", accent: "#e91e63" }, // Track 3: Royal Purple
+            { primary: "#1b5e20", gold: "#81c784", accent: "#ff9800" }, // Track 4: Forest Green
+            { primary: "#b71c1c", gold: "#ffcc80", accent: "#009688" }  // Track 5: Sunset Crimson
+        ];
+
+        let currentTrackIndex = 0;
+        let isMuted = false;
 
         let currentMode = 'study';
         let currentDifficulty = 'easy'; 
@@ -376,9 +410,38 @@
                 alert("Security Error: Original branding modified.");
                 return;
             }
-            bgMusic.play().catch(error => console.log("Audio deferred."));
+            playCurrentTrack();
             document.getElementById('intro-screen').style.opacity = '0';
             document.getElementById('intro-screen').style.visibility = 'hidden';
+        }
+
+        // 🎛️ සින්දුවෙන් සින්දුවට පාට වෙනස් කරන සහ Track මාරු කරන පද්ධතිය
+        function playCurrentTrack() {
+            bgTracks.forEach(track => { if(track) { track.pause(); track.currentTime = 0; } });
+            if (!isMuted && bgTracks[currentTrackIndex]) {
+                bgTracks[currentTrackIndex].play().catch(e => console.log("Audio playing deferred"));
+            }
+            applyMusicTheme(currentTrackIndex);
+        }
+
+        function changeMusic() {
+            currentTrackIndex = (currentTrackIndex + 1) % bgTracks.length;
+            document.getElementById('change-music-btn').innerText = `සංගීතය මාරු කරන්න 🎵 (Track ${currentTrackIndex + 1})`;
+            playCurrentTrack();
+        }
+
+        function applyMusicTheme(index) {
+            const theme = musicThemes[index];
+            document.documentElement.style.setProperty('--primary-color', theme.primary);
+            document.documentElement.style.setProperty('--gold-color', theme.gold);
+            document.documentElement.style.setProperty('--accent-color', theme.accent);
+            
+            // UI Panels වල Elements වල පාටවල් dynamically update කිරීම
+            document.getElementById('category-panel').style.borderColor = theme.primary;
+            document.getElementById('history-panel').style.borderColor = theme.primary;
+            document.querySelectorAll('.btn-mode').forEach(btn => {
+                if(!btn.classList.contains('active')) btn.style.borderColor = theme.primary;
+            });
         }
 
         function toggleTheme() {
@@ -395,13 +458,16 @@
 
         function toggleMute() {
             const muteBtn = document.getElementById('mute-btn');
-            if (bgMusic.muted) {
-                bgMusic.muted = false;
+            const bgVideo = document.getElementById('bg-video');
+            if (isMuted) {
+                isMuted = false;
                 if(bgVideo) bgVideo.muted = false;
+                bgTracks[currentTrackIndex].play().catch(e => {});
                 muteBtn.innerText = "Mute 🎵";
             } else {
-                bgMusic.muted = true;
+                isMuted = true;
                 if(bgVideo) bgVideo.muted = true;
+                bgTracks.forEach(track => { if(track) track.pause(); });
                 muteBtn.innerText = "Unmute 🔇";
             }
         }
@@ -558,20 +624,14 @@
                 document.getElementById('score').innerText = score;
                 pin.classList.add('answered');
                 stats.correctCounts[target.name] = (stats.correctCounts[target.name] || 0) + 1;
-                
-                // 📊 Real-time Dashboard Update (Quiz Mode)
                 updateAnalyticsDashboard();
-                
                 setTimeout(() => { alert('💥 නිවැරදියි!'); checkQuizCompletion(); }, 100);
             } else {
                 wrongSound.currentTime = 0;
                 wrongSound.play();
                 pin.classList.add('failed'); 
                 stats.failedCounts[target.name] = (stats.failedCounts[target.name] || 0) + 1;
-                
-                // 📊 Real-time Dashboard Update (Quiz Mode)
                 updateAnalyticsDashboard();
-                
                 setTimeout(() => { alert(`❌ වැරදියි! නිවැරදි පිළිතුර: ${target.name} (${target.ancient})`); checkQuizCompletion(); }, 100);
             }
         }
@@ -684,7 +744,6 @@
             svgLayer.style.width = mapImage.clientWidth + 'px';
             svgLayer.style.height = mapImage.clientHeight + 'px';
             
-            // 📊 Real-time Dashboard Update (Self-Study Mode)
             updateAnalyticsDashboard();
             
             document.getElementById('btn-confirm').style.display = 'none';
