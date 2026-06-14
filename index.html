@@ -30,9 +30,55 @@
         .btn-mode { background-color: var(--card-bg); color: var(--text-color); border: 2px solid var(--primary-color); }
         .btn-mode.active { background-color: #16a085; color: white; border-color: #16a085; }
         .score-board { font-size: 18px; font-weight: bold; margin-bottom: 15px; color: var(--text-color); text-align: center; }
-        .app-container { position: relative; max-width: 650px; width: 100%; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.2); overflow: hidden; background: white; }
-        .map-wrapper { position: relative; width: 100%; }
+        
+        .app-container { position: relative; max-width: 650px; width: 100%; border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,0.2); overflow: hidden; background: white; display: flex; justify-content: center; }
+        .map-wrapper { position: relative; display: inline-block; width: 100%; height: auto; }
         .base-map { width: 100%; height: auto; display: block; margin: 0 auto; }
+        
+        #svg-arrow-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 15;
+        }
+
+        .progress-container {
+            width: 100%;
+            max-width: 500px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin: 10px auto 15px auto;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            position: relative;
+            height: 22px;
+        }
+        [data-theme="dark"] .progress-container { background-color: #444444; }
+        
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #16a085, #1abc9c);
+            transition: width 0.4s ease-in-out;
+            border-radius: 10px;
+        }
+        
+        .progress-text {
+            position: absolute;
+            width: 100%;
+            text-align: center;
+            font-size: 13px;
+            font-weight: bold;
+            color: #2c3e50;
+            z-index: 2;
+        }
+        [data-theme="dark"] .progress-text { color: #ffffff; }
+
         .pin { position: absolute; cursor: pointer; transform: translate(-50%, -50%); border: 3px solid white; border-radius: 50%; box-shadow: 0 2px 5px rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; z-index: 10; }
         .pin.type-river { width: 16px; height: 16px; background-color: #00008B; animation: pulseRiver 2s infinite; border: 2px solid white; }
         .pin.type-tank { width: 16px; height: 16px; background-color: #3498db; animation: pulseTank 2s infinite; border: 2px solid white; }
@@ -40,7 +86,6 @@
         .pin.type-kingdom { width: 8px; height: 8px; background-color: #9b59b6; animation: pulseKingdom 2s infinite; border: 1px solid white; }
         .pin.type-subkingdom { width: 8px; height: 8px; background-color: #2980b9; animation: pulseSubKingdom 2s infinite; border: 1px solid white; }
         .pin.type-province { width: 20px; height: 20px; background-color: #7f8c8d; animation: pulseProvince 2s infinite; border: 2px solid white; }
-        /* 🍃 නව ප්‍රාග් ඓතිහාසික ස්ථාන පින් */
         .pin.type-prehistoric { width: 10px; height: 10px; background-color: #27ae60; animation: pulsePre 2s infinite; border: 1px solid white; }
         
         @keyframes pulseRiver { 0% { box-shadow: 0 0 0 0 rgba(0, 0, 139, 0.7); } 100% { box-shadow: 0 0 0 0 rgba(0, 0, 139, 0); } }
@@ -86,7 +131,7 @@
 
     <div class="intro-overlay" id="intro-screen">
         <h1>සාමාන්‍ය පෙළ / උසස් පෙළ ඓතිහාසික ස්ථාන ලකුණු කිරීම</h1>
-        <p>ඉතිහාසය විෂය නිර්දේශයේ සිතියම් ලකුණු කිරීමේ ප්‍රශ්න පත්‍රයට ඉතා පහසුවෙන් ඉහළම ලකුණු ලබාගැනීම සඳහා, ශ්‍රී ලංකාවේ ප්‍රධාන ඓතිහාසික ගංගා පද්ධතිය, වැව්, වරායන්, රාජධානී, උපරාජධානී, පළාත් සහ ප්‍රාග් ඓතිහාසික ස්ථාන නිවැරදිව පුහුණු විය හැකි අන්තර්ක්‍රියාකාරී අධ්‍යාපනික යෙදවුම.</p>
+        <p>ඉතිහාසය විෂය නිර්දේශයේ සිතියම් ලකුණු කිරීමේ ප්‍රශ්න පත්‍රයට ඉතා පහසුවෙන් ඉහළම ලකුණු ලබාගැනීම සඳහා, ශ්‍රී ලංකාවේ ප්‍රධාන ඓතිහාසික ගංගා පද්ධතිය, වැව්, වරායන්, ਰਾජධානී, උපරාජධානී, පළාත් සහ ප්‍රාග් ඓතිහාසික ස්ථාන නිවැරදිව පුහුණු විය හැකි අන්තර්ක්‍රියාකාරී අධ්‍යාපනික යෙදවුම.</p>
         <button class="btn-start" onclick="startApp()">ඇතුළු වන්න</button>
         <div style="font-size: 14px; font-weight: bold; color: var(--gold-color);">Created by Binada Thathsilu</div>
     </div>
@@ -96,8 +141,8 @@
         <label class="category-label"><input type="checkbox" id="chk-rivers" checked onchange="handleCategoryChange()"> ගංගා 💧</label>
         <label class="category-label"><input type="checkbox" id="chk-tanks" checked onchange="handleCategoryChange()"> වැව් 💧</label>
         <label class="category-label"><input type="checkbox" id="chk-ports" checked onchange="handleCategoryChange()"> වරායන් ⚓</label>
-        <label class="category-label"><input type="checkbox" id="chk-kingdoms" checked onchange="handleCategoryChange()"> රාජධානී 👑</label>
-        <label class="category-label"><input type="checkbox" id="chk-subkingdoms" checked onchange="handleCategoryChange()"> උපරාජධානී 🏹</label>
+        <label class="category-label"><input type="checkbox" id="chk-kingdoms" checked onchange="handleCategoryChange()"> ਰਾජධානී 👑</label>
+        <label class="category-label"><input type="checkbox" id="chk-subkingdoms" checked onchange="handleCategoryChange()"> උපරාජධානිය 🏹</label>
         <label class="category-label"><input type="checkbox" id="chk-provinces" checked onchange="handleCategoryChange()"> පළාත් 📍</label>
         <label class="category-label"><input type="checkbox" id="chk-prehistoric" checked onchange="handleCategoryChange()"> ප්‍රාග් ඓතිහාසික 🍃</label>
     </div>
@@ -116,19 +161,29 @@
 
     <div class="score-board" id="score-board" style="display: none;">ලකුණු: <span id="score">0</span> / <span id="total">0</span></div>
 
-    <div class="self-study-panel" id="self-study-panel" style="display: none;">
-    <div id="self-study-progress" style="font-size: 15px; font-weight: bold; color: #e67e22; margin-bottom: 8px;"></div>
-    
-    <div id="self-study-question" style="font-size: 18px; font-weight: bold;"></div>
-    <div class="controls" style="margin-bottom: 0;">
-        <button id="btn-confirm" class="btn-confirm" onclick="confirmSelfStudyAnswer()" disabled>තහවුරු කරන්න</button>
-        <button id="btn-next" class="btn-next" onclick="nextSelfStudyQuestion()" style="display: none;">මීළඟ ප්‍රශ්නය</button>
+    <div class="self-study-panel" id="self-study-panel" style="display: none; flex-direction: column; align-items: center; width: 100%;">
+        <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+            <div class="progress-text" id="progress-text">ස්ථානය: 0 / 0 (0%)</div>
+        </div>
+        <div id="self-study-question" style="font-size: 18px; font-weight: bold; margin-bottom: 10px;"></div>
+        <div class="controls" style="margin-bottom: 0;">
+            <button id="btn-confirm" class="btn-confirm" onclick="confirmSelfStudyAnswer()" disabled>තහවුරු කරන්න</button>
+            <button id="btn-next" class="btn-next" onclick="nextSelfStudyQuestion()" style="display: none;">මීළඟ ප්‍රශ්නය</button>
+        </div>
     </div>
-</div>
 
     <div class="app-container">
         <div class="map-wrapper" id="map-wrapper">
             <img src="map.jpg" alt="Sri Lanka Map" class="base-map" id="sri-lanka-map">
+            <svg id="svg-arrow-layer" style="display: none;">
+                <defs>
+                    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="8" refY="3.5" orient="auto">
+                        <polygon points="0 0, 10 3.5, 0 7" fill="#e74c3c" />
+                    </marker>
+                </defs>
+                <line id="arrow-line" x1="0" y1="0" x2="0" y2="0" stroke="#e74c3c" stroke-width="3" stroke-dasharray="5,5" marker-end="url(#arrowhead)" />
+            </svg>
         </div>
     </div>
 
@@ -158,10 +213,9 @@
         </div>
     </div>
 
-    <script>
+    <script {nonce}>
         const _0xBranding = "Binada Thathsilu";
         const mapData = [
-            
             { id: 1, type: "river", name: "මල්වතු ඔය", ancient: "කදම්බ නදිය", x: 33.0, y: 33.0 },
             { id: 2, type: "river", name: "කලා ඔය", ancient: "ගෝණ නදිය", x: 29.8, y: 43.5 },
             { id: 3, type: "river", name: "දැදුරු ඔය", ancient: "ජජ්ජර නදිය", x: 26.5, y: 55.9 },
@@ -253,7 +307,6 @@
             { id: 84, type: "province", name: "ඌව පළාත", ancient: "ඌව", x: 60.0, y: 75.0 },
             { id: 85, type: "province", name: "සබරගමුව පළාත", ancient: "සබරගමුව", x: 38.0, y: 70.0 },
 
-            // අලුතින් එකතු වන ප්‍රාග් ඓතිහාසික ස්ථාන (Prehistoric sites)
             { id: 86, type: "prehistoric", name: "උඩරංචාමඩම", ancient: "උඩරංචාමඩම", x: 48.3, y: 81.4 },
             { id: 87, type: "prehistoric", name: "බටදොඹලෙන", ancient: "බටදොඹලෙන", x: 37.3, y: 73.8 },
             { id: 88, type: "prehistoric", name: "පාහියන්ගල", ancient: "පාහියන්ගල", x: 35.3, y: 75.9 },
@@ -275,7 +328,6 @@
             { id: 104, type: "prehistoric", name: "මහියංගනය", ancient: "මහියංගනය", x: 57.1, y: 64.7 }
         ];
 
-        
         function handleCategoryChange() {
             activeCategories = [];
             if(document.getElementById('chk-rivers').checked) activeCategories.push('river');
@@ -311,7 +363,7 @@
         let currentSelfStudyIndex = 0;
         let currentGuess = null;
 
-        let stats = { highScore: 0, correctCounts: {}, failCounts: {} };
+        let stats = { highScore: 0, correctCounts: {}, failedCounts: {} };
 
         const mapWrapper = document.getElementById('map-wrapper');
         const mapImage = document.getElementById('sri-lanka-map');
@@ -400,7 +452,9 @@
 
         function renderPins() {
             const existingPins = mapWrapper.querySelectorAll('.pin');
-            existingPins.forEach(pin => pin.remove());
+            existingPins.forEach(pin => {
+                if(pin.id !== 'user-guess-pin' && pin.id !== 'true-location-pin') pin.remove();
+            });
 
             if (currentMode === 'self') return;
 
@@ -437,6 +491,9 @@
                 diffPanel.style.display = 'none';
                 scoreBoard.style.display = 'none';
                 selfStudyPanel.style.display = 'none';
+                removeUserGuessPin();
+                removeTrueLocationPin();
+                removeArrowLine();
                 renderPins();
             } else {
                 diffPanel.style.display = 'flex';
@@ -445,6 +502,9 @@
                     document.getElementById('score').innerText = score;
                     scoreBoard.style.display = 'block';
                     selfStudyPanel.style.display = 'none';
+                    removeUserGuessPin();
+                    removeTrueLocationPin();
+                    removeArrowLine();
                     generateQuizDataset();
                     renderPins();
                 } else if (mode === 'self') {
@@ -490,7 +550,7 @@
             const pin = mapWrapper.querySelector(`.pin[data-id="${activePinId}"]`);
             const target = mapData.find(r => r.id === activePinId);
             quizQuestionsAnswered++;
-            
+
             if (selectedId === activePinId) {
                 correctSound.currentTime = 0;
                 correctSound.play();
@@ -498,12 +558,20 @@
                 document.getElementById('score').innerText = score;
                 pin.classList.add('answered');
                 stats.correctCounts[target.name] = (stats.correctCounts[target.name] || 0) + 1;
+                
+                // 📊 Real-time Dashboard Update (Quiz Mode)
+                updateAnalyticsDashboard();
+                
                 setTimeout(() => { alert('💥 නිවැරදියි!'); checkQuizCompletion(); }, 100);
             } else {
                 wrongSound.currentTime = 0;
                 wrongSound.play();
                 pin.classList.add('failed'); 
                 stats.failedCounts[target.name] = (stats.failedCounts[target.name] || 0) + 1;
+                
+                // 📊 Real-time Dashboard Update (Quiz Mode)
+                updateAnalyticsDashboard();
+                
                 setTimeout(() => { alert(`❌ වැරදියි! නිවැරදි පිළිතුර: ${target.name} (${target.ancient})`); checkQuizCompletion(); }, 100);
             }
         }
@@ -514,151 +582,186 @@
             }
         }
 
-       function startSelfStudyMode() {
-    selfStudyQueue = [...quizActiveDataset].sort(() => Math.random() - 0.5);
-    currentSelfStudyIndex = 0;
-    score = 0; 
-    showSelfStudyQuestion();
-}
-
-function showSelfStudyQuestion() {
-    removeUserGuessPin();
-    removeTrueLocationPin();
-    renderPins(); 
-    currentGuess = null;
-    
-    document.getElementById('btn-confirm').style.display = 'inline-block';
-    document.getElementById('btn-confirm').disabled = true;
-    document.getElementById('btn-next').style.display = 'none';
-    
-    if (currentSelfStudyIndex < selfStudyQueue.length) {
-                document.getElementById('self-study-progress').innerText = `📍 ස්ථානය: ${currentSelfStudyIndex + 1} / ${selfStudyQueue.length}`;
-
-        const currentPlace = selfStudyQueue[currentSelfStudyIndex];
-        let prefix = '💧 ගංගාව';
-        if(currentPlace.type === 'tank') prefix = '💧 වැව/ජලාශය';
-        else if(currentPlace.type === 'port') prefix = '⚓ පැරණි වරාය';
-        else if(currentPlace.type === 'kingdom') prefix = '👑 රාජධානිය';
-        else if(currentPlace.type === 'subkingdom') prefix = '🏹 උපරාජධානිය';
-        else if(currentPlace.type === 'province') prefix = '📍 පළාත';
-        else if(currentPlace.type === 'prehistoric') prefix = '🍃 ප්‍රාග් ඓතිහාසික';
-        
-        document.getElementById('self-study-question').innerText = `🎯 ලකුණු කරන්න [${prefix}]: ${currentPlace.name} (${currentPlace.ancient})`;
-    } else {
-        document.getElementById('self-study-progress').innerText = "";
-        document.getElementById('self-study-question').innerText = "🎉 සියලුම ස්ථාන ලකුණු කර අවසන්!";
-        document.getElementById('btn-confirm').style.display = 'none';
-        showFinalResults(score, selfStudyQueue.length);
-    }
-}
-
-function confirmSelfStudyAnswer() {
-    if (!currentGuess) return;
-    const target = selfStudyQueue[currentSelfStudyIndex];
-    
-    const truePin = document.createElement('div');
-    truePin.id = 'true-location-pin';
-    truePin.className = 'pin true-location';
-    truePin.style.left = `${target.x}%`;
-    truePin.style.top = `${target.y}%`;
-    
-    const tooltip = document.createElement('span');
-    tooltip.className = 'tooltip';
-    tooltip.style.visibility = 'visible';
-    tooltip.style.opacity = '1';
-    tooltip.innerHTML = `<strong>නියම ස්ථානය මෙතනයි!</strong><br>${target.name}`;
-    truePin.appendChild(tooltip);
-    mapWrapper.appendChild(truePin);
-    
-    const distance = Math.sqrt(Math.pow(currentGuess.x - target.x, 2) + Math.pow(currentGuess.y - target.y, 2));
-    if (distance <= 7.0) {
-        correctSound.currentTime = 0;
-        correctSound.play();
-        score++;
-        stats.correctCounts[target.name] = (stats.correctCounts[target.name] || 0) + 1;
-    } else {
-        wrongSound.currentTime = 0;
-        wrongSound.play();
-        
-        stats.failCounts[target.name] = (stats.failCounts[target.name] || 0) + 1;
-    }
-    
-   
-    document.getElementById('btn-confirm').style.display = 'none';
-    document.getElementById('btn-next').style.display = 'inline-block';
-}
-
-function nextSelfStudyQuestion() {
-    currentSelfStudyIndex++;
-    showSelfStudyQuestion();
-}
-
-function showFinalResults(obtained, total) {
-    const percentage = Math.round((obtained / total) * 100);
-    if (percentage > stats.highScore) {
-        stats.highScore = percentage;
-        document.getElementById('stat-high-score').innerText = `${percentage}%`;
-    }
-    updateAnalyticsDashboard();
-
-    document.getElementById('result-percentage').innerText = `${percentage}%`;
-    const gradeEl = document.getElementById('result-grade');
-    const congratsEl = document.getElementById('result-congrats');
-    gradeEl.className = "grade-box";
-    congratsEl.innerText = "";
-
-    if (percentage >= 90) {
-        gradeEl.innerText = "A+";
-        gradeEl.classList.add("grade-a-plus");
-        congratsEl.innerText = "🎉 සුබ පැතුම්! ඔබ ඉතා විශිෂ්ට ලෙස සිතියම ලකුණු කර ඇත!";
-    } else if (percentage >= 75) {
-        gradeEl.innerText = "A";
-        gradeEl.classList.add("grade-a");
-        congratsEl.innerText = "👍 සුබ පැතුම් ඔබ හොඳට කරා!";
-    } else if (percentage >= 65) {
-        gradeEl.innerText = "B";
-        gradeEl.classList.add("grade-b");
-    } else if (percentage >= 50) {
-        gradeEl.innerText = "C";
-        gradeEl.classList.add("grade-c");
-    } else {
-        gradeEl.innerText = (percentage >= 35) ? "S" : "F";
-        gradeEl.classList.add("grade-f");
-    }
-    document.getElementById('result-modal').style.display = 'flex';
-}
-
-function closeResultModal() {
-    document.getElementById('result-modal').style.display = 'none';
-    setMode(currentMode); 
-}
-
-function updateAnalyticsDashboard() {
-    let mostCorrect = "-";
-    let maxCorrectValue = 0;
-    for (let place in stats.correctCounts) {
-        if (stats.correctCounts[place] > maxCorrectValue) {
-            maxCorrectValue = stats.correctCounts[place];
-            mostCorrect = `${place} (${maxCorrectValue} වාරයක්)`;
+        function startSelfStudyMode() {
+            selfStudyQueue = [...quizActiveDataset].sort(() => Math.random() - 0.5);
+            currentSelfStudyIndex = 0;
+            score = 0; 
+            showSelfStudyQuestion();
         }
-    }
-    let mostFailed = "-";
-    let maxFailValue = 0;
-    
-    for (let place in stats.failCounts) {
-        if (stats.failCounts[place] > maxFailValue) {
-            maxFailValue = stats.failCounts[place];
-            mostFailed = `${place} (${maxFailValue} වාරයක්)`;
+
+        function showSelfStudyQuestion() {
+            removeUserGuessPin();
+            removeTrueLocationPin();
+            removeArrowLine();
+            renderPins(); 
+            currentGuess = null;
+            
+            document.getElementById('btn-confirm').style.display = 'inline-block';
+            document.getElementById('btn-confirm').disabled = true;
+            document.getElementById('btn-next').style.display = 'none';
+            
+            if (currentSelfStudyIndex < selfStudyQueue.length) {
+                const currentNum = currentSelfStudyIndex + 1;
+                const totalNum = selfStudyQueue.length;
+                const percentage = Math.round((currentSelfStudyIndex / totalNum) * 100);
+                
+                document.getElementById('progress-bar').style.width = `${percentage}%`;
+                document.getElementById('progress-text').innerText = `ස්ථානය: ${currentNum} / ${totalNum} (${percentage}%)`;
+
+                const currentPlace = selfStudyQueue[currentSelfStudyIndex];
+                let prefix = '💧 ගංගාව';
+                if(currentPlace.type === 'tank') prefix = '💧 වැව/ජලාශය';
+                else if(currentPlace.type === 'port') prefix = '⚓ පැරණි වරාය';
+                else if(currentPlace.type === 'kingdom') prefix = '👑 රාජධානිය';
+                else if(currentPlace.type === 'subkingdom') prefix = '🏹 උපරාජධානිය';
+                else if(currentPlace.type === 'province') prefix = '📍 පළාත';
+                else if(currentPlace.type === 'prehistoric') prefix = '🍃 ප්‍රාග් ඓතිහාසික';
+                
+                document.getElementById('self-study-question').innerText = `🎯 ලකුණු කරන්න [${prefix}]: ${currentPlace.name} (${currentPlace.ancient})`;
+            } else {
+                document.getElementById('progress-bar').style.width = `100%`;
+                document.getElementById('progress-text').innerText = `ස්ථානය: අවසන්! (100%)`;
+                document.getElementById('self-study-question').innerText = "🎉 සියලුම ස්ථාන ලකුණු කර අවසන්!";
+                document.getElementById('btn-confirm').style.display = 'none';
+                showFinalResults(score, selfStudyQueue.length);
+            }
         }
-    }
-    document.getElementById('stat-most-correct').innerText = mostCorrect;
-    document.getElementById('stat-most-failed').innerText = mostFailed;
-}
 
-function removeUserGuessPin() { const p = document.getElementById('user-guess-pin'); if (p) p.remove(); }
-function removeTrueLocationPin() { const p = document.getElementById('true-location-pin'); if (p) p.remove(); }
+        function removeArrowLine() {
+            document.getElementById('svg-arrow-layer').style.display = 'none';
+            const line = document.getElementById('arrow-line');
+            line.setAttribute('x1', '0');
+            line.setAttribute('y1', '0');
+            line.setAttribute('x2', '0');
+            line.setAttribute('y2', '0');
+        }
 
-window.onload = initApp;
+        function confirmSelfStudyAnswer() {
+            if (!currentGuess) return;
+            const target = selfStudyQueue[currentSelfStudyIndex];
+            
+            const truePin = document.createElement('div');
+            truePin.id = 'true-location-pin';
+            truePin.className = 'pin true-location';
+            truePin.style.left = `${target.x}%`;
+            truePin.style.top = `${target.y}%`;
+            
+            const tooltip = document.createElement('span');
+            tooltip.className = 'tooltip';
+            tooltip.style.visibility = 'visible';
+            tooltip.style.opacity = '1';
+            tooltip.innerHTML = `<strong>නියම ස්ථානය මෙතනයි!</strong><br>${target.name}`;
+            truePin.appendChild(tooltip);
+            mapWrapper.appendChild(truePin);
+            
+            const svgLayer = document.getElementById('svg-arrow-layer');
+            const arrowLine = document.getElementById('arrow-line');
+            
+            arrowLine.setAttribute('x1', `${currentGuess.x}%`);
+            arrowLine.setAttribute('y1', `${currentGuess.y}%`);
+            arrowLine.setAttribute('x2', `${target.x}%`);
+            arrowLine.setAttribute('y2', `${target.y}%`);
+            
+            const distance = Math.sqrt(Math.pow(currentGuess.x - target.x, 2) + Math.pow(currentGuess.y - target.y, 2));
+            if (distance <= 7.0) {
+                arrowLine.setAttribute('stroke', '#2ecc71'); 
+                document.querySelector('#arrowhead polygon').setAttribute('fill', '#2ecc71');
+                
+                correctSound.currentTime = 0;
+                correctSound.play();
+                score++;
+                stats.correctCounts[target.name] = (stats.correctCounts[target.name] || 0) + 1;
+            } else {
+                arrowLine.setAttribute('stroke', '#e74c3c'); 
+                document.querySelector('#arrowhead polygon').setAttribute('fill', '#e74c3c');
+                
+                wrongSound.currentTime = 0;
+                wrongSound.play();
+                stats.failedCounts[target.name] = (stats.failedCounts[target.name] || 0) + 1;
+            }
+            
+            svgLayer.style.display = 'block'; 
+            svgLayer.style.width = mapImage.clientWidth + 'px';
+            svgLayer.style.height = mapImage.clientHeight + 'px';
+            
+            // 📊 Real-time Dashboard Update (Self-Study Mode)
+            updateAnalyticsDashboard();
+            
+            document.getElementById('btn-confirm').style.display = 'none';
+            document.getElementById('btn-next').style.display = 'inline-block';
+        }
+
+        function nextSelfStudyQuestion() {
+            currentSelfStudyIndex++;
+            showSelfStudyQuestion();
+        }
+
+        function showFinalResults(obtained, total) {
+            const percentage = Math.round((obtained / total) * 100);
+            if (percentage > stats.highScore) {
+                stats.highScore = percentage;
+                document.getElementById('stat-high-score').innerText = `${percentage}%`;
+            }
+            updateAnalyticsDashboard();
+
+            document.getElementById('result-percentage').innerText = `${percentage}%`;
+            const gradeEl = document.getElementById('result-grade');
+            const congratsEl = document.getElementById('result-congrats');
+            gradeEl.className = "grade-box";
+            congratsEl.innerText = "";
+
+            if (percentage >= 90) {
+                gradeEl.innerText = "A+";
+                gradeEl.classList.add("grade-a-plus");
+                congratsEl.innerText = "🎉 සුබ පැතුම්! ඔබ ඉතා විශිෂ්ට ලෙස සිතියම ලකුණු කර ඇත!";
+            } else if (percentage >= 75) {
+                gradeEl.innerText = "A";
+                gradeEl.classList.add("grade-a");
+                congratsEl.innerText = "👍 සුබ පැතුම් ඔබ හොඳට කරා!";
+            } else if (percentage >= 65) {
+                gradeEl.innerText = "B";
+                gradeEl.classList.add("grade-b");
+            } else if (percentage >= 50) {
+                gradeEl.innerText = "C";
+                gradeEl.classList.add("grade-c");
+            } else {
+                gradeEl.innerText = (percentage >= 35) ? "S" : "F";
+                gradeEl.classList.add("grade-f");
+            }
+            document.getElementById('result-modal').style.display = 'flex';
+        }
+
+        function closeResultModal() {
+            document.getElementById('result-modal').style.display = 'none';
+            setMode(currentMode); 
+        }
+
+        function updateAnalyticsDashboard() {
+            let mostCorrect = "-";
+            let maxCorrectValue = 0;
+            for (let place in stats.correctCounts) {
+                if (stats.correctCounts[place] > maxCorrectValue) {
+                    maxCorrectValue = stats.correctCounts[place];
+                    mostCorrect = `${place} (${maxCorrectValue} වාරයක්)`;
+                }
+            }
+            
+            let mostFailed = "-";
+            let maxFailValue = 0;
+            for (let place in stats.failedCounts) {
+                if (stats.failedCounts[place] > maxFailValue) {
+                    maxFailValue = stats.failedCounts[place];
+                    mostFailed = `${place} (${maxFailValue} වාරයක්)`;
+                }
+            }
+            document.getElementById('stat-most-correct').innerText = mostCorrect;
+            document.getElementById('stat-most-failed').innerText = mostFailed;
+        }
+
+        function removeUserGuessPin() { const p = document.getElementById('user-guess-pin'); if (p) p.remove(); }
+        function removeTrueLocationPin() { const p = document.getElementById('true-location-pin'); if (p) p.remove(); }
+
+        window.onload = initApp;
     </script>
 </body>
 </html>
